@@ -6,7 +6,7 @@
 
 
 from functools import partial
-from Tkinter import *           # Tk, Frame, Button, Listbox, OptionMenu, Scrollbar, StringVar
+from Tkinter import *
 from Speak import *
 from Word import *
 
@@ -37,14 +37,35 @@ class GUI:
         self.menubar.add_cascade(label="Edit", menu=self.editMenu)
         self.menubar.add_cascade(label="Help", menu=self.helpMenu)
 
+<<<<<<< HEAD
         # File Menu
+=======
+    ######################### ADD FUNCTION ###################################
+    # Take the word in the newWordDefName variable (in the function above) and
+    # add it to the spelling list. Then it should close the window. and update
+    # all the relevant list boxes.
+    
+    new_word = Word(newWordName.get, newWordExampleName.get, newWordDefName.get, newWordLevelName.get)
+    lstbox.insert(END, new_word.word)
+	
+>>>>>>> c04f441323ae3ff7f5b86e4858031478d90246fb
 
         self.fileMenu.add_command(label="Import list")
         self.fileMenu.add_command(label="Export list")
         self.fileMenu.add_separator()
         self.fileMenu.add_command(label="Exit", command=self.exit)
 
+<<<<<<< HEAD
         # Edit Menu
+=======
+    ######################### ADD FUNCTION ###################################
+    # Take the selected words in the list and remove them from the spelling
+    # list
+    
+    print "temporary test message: word removed"
+    pass
+    
+>>>>>>> c04f441323ae3ff7f5b86e4858031478d90246fb
 
         self.editMenu.add_command(label="Add/remove lists", command=self.manageLists)
         self.editMenu.add_command(label="Add word", command=self.newWord)
@@ -57,12 +78,48 @@ class GUI:
 
         root.config(menu=self.menubar)
 
+<<<<<<< HEAD
 
         # Word lists
         self.listNames = ["Child", "ESOL", "BEE"]
         self.childList = ("child1", "child2", "child3")      # This will hold the child list
         self.esolList = ("esol1", "esol2", "esol3")          # This will hold the ESOL list
         self.beeList = ("bee1", "bee1", "bee1")              # This will hold the BEE list
+=======
+    addListWindow = Toplevel(root)
+    
+    addListFrame = Frame(addListWindow)
+    addListFrame.grid(column=0, row=0, padx=10, pady=20)
+    
+    addListLabel = Label(addListFrame, text='New list name:')
+    addListLabel.grid(column=0, row=0)
+    addListName = StringVar()
+    addListEntry = Entry(addListFrame, textvariable=addListName)
+    addListEntry.grid(column=1, row=0)
+    
+    createButton(addListFrame, 2, 0, "Add", newListFn, "grey")
+    createButton(addListFrame, 3, 0, "Back", addListWindow.destroy, "grey")
+
+def newListFn():
+
+    ######################### ADD FUNCTION ###################################
+    # Takes the value of the addListName variable and makes a list of that name
+    # updating the listbox of names and the option menu from which you can
+    # select lists. Also at the end of this it should close the window.
+    
+    print "temporary test message: list created"
+    pass
+
+
+def removeListFn():
+
+    ######################### ADD FUNCTION ###################################
+    # Takes the list/s selected and deletes it
+    
+    print "temporary test message: list removed"
+    pass
+    
+>>>>>>> c04f441323ae3ff7f5b86e4858031478d90246fb
 
         # Listbox Frame
         self.listFrame = Frame(root, width=120)
@@ -90,6 +147,12 @@ class GUI:
                                                                                                     ### have some way to actually use whats selected in the list box
         self.createButton(self.speechFrame, 1, 0, "Stop", restartFest, colour="red")
     
+<<<<<<< HEAD
+=======
+    createButton(manageListBtnFrame, 2, 0, "Add", addListFn, "grey")
+    createButton(manageListBtnFrame, 3, 0, "Remove", removeListFn, "grey")
+    createButton(manageListBtnFrame, 4, 0, "Back", newListWindow.destroy, "grey")
+>>>>>>> c04f441323ae3ff7f5b86e4858031478d90246fb
 
     def createButton(self, parent, x, y, txt, fn, colour):
 		
@@ -185,6 +248,7 @@ class GUI:
         self.lstbox.insert(END, new_word)
 	
 
+<<<<<<< HEAD
     def removeWordFn(self):
 
     ######################### ADD FUNCTION ###################################
@@ -193,6 +257,57 @@ class GUI:
 		
         pass
 		
+=======
+# Import/Export as tldr file functions
+
+def importList():
+
+    ######################### ADD FUNCTION ###################################
+    # This function let you browse to find a file then it will take the values
+    # in this file and have it as a spelling list in the program. IDK how we
+    # want this to work but the general idea is that.
+
+    print "temporary test message: list imported"
+    pass
+    
+def exportList():
+
+    ######################### ADD FUNCTION ###################################
+    # This function takes a spelling list and exports it as a tldr file. It will
+    # therefore have to let you browse to let you choose where to save the file.
+    
+    print "temporary test message: list exported"
+    pass    
+
+
+# Functions to remove lists
+
+def mergeLists():
+
+    ######################### ADD FUNCTION ###################################
+    # I have no idea how we want to do this. The basic idea is this should let
+    # you copy words from other lists.
+
+    print "temporary test message: list merged"
+    pass
+    
+    
+# Speak button functions
+
+def speakSelected():
+
+    ######################### ADD FUNCTION ###################################
+    # This function must take the selected words from the listbox (variable name
+    # = wordList) and speak those words
+
+    print "temporary test message: selected words spoken"
+    pass
+        
+
+# Initialise GUI
+root = Tk()
+root.title("Teacher Interface")
+>>>>>>> c04f441323ae3ff7f5b86e4858031478d90246fb
 
     # Exit window
 
@@ -209,13 +324,27 @@ class GUI:
         exitBtnFrame = Frame(exitFrame)
         exitBtnFrame.grid(column=0, row=1, pady=10)
 
+<<<<<<< HEAD
         createButton(exitBtnFrame, 0, 0, "Yes", root.quit, "grey")
         createButton(exitBtnFrame, 1, 0, "No", exitWindow.destroy, "grey")
+=======
+fileMenu.add_command(label="Import list", command=importList)
+fileMenu.add_command(label="Export list", command=exportList)
+fileMenu.add_separator()
+fileMenu.add_command(label="Exit", command=exit)
+>>>>>>> c04f441323ae3ff7f5b86e4858031478d90246fb
 
 
+<<<<<<< HEAD
     # New list window    
 		
     def addListFn(self):
+=======
+editMenu.add_command(label="Add/remove lists", command=manageLists)
+editMenu.add_command(label="Add word", command=newWord)
+editMenu.add_command(label="Remove selected word/s", command=removeWordFn)
+editMenu.add_command(label="Merge lists", command=mergeLists)
+>>>>>>> c04f441323ae3ff7f5b86e4858031478d90246fb
 
         addListWindow = Toplevel(root)
 		
@@ -260,8 +389,14 @@ class GUI:
     # This function must take the selected words from the listbox (variable name
     # = wordList) and speak those words
 
+<<<<<<< HEAD
         pass
 		
+=======
+# Speech buttons
+createButton(speechFrame, 0, 0, "Test", speakSelected, colour="green")
+createButton(speechFrame, 1, 0, "Stop", restartFest, colour="red")
+>>>>>>> c04f441323ae3ff7f5b86e4858031478d90246fb
 
 # Initialise GUI
 root = Tk()
