@@ -11,7 +11,7 @@ from subprocess import Popen, PIPE
 from signal import signal, SIGKILL
 
 
-def speak(text):
+def speakSelected(text):
     """ Speaks the string input """
     proc.stdin.write('(SayText "%s")\n' % text)
 
