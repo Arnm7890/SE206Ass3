@@ -3,19 +3,14 @@
 # SOFTENG 206 Assignment 3
 # Andrew Luey and Arunim Talwar
 # Date: September 2011
+# Description: Tk widget creation
 
 
 from functools import partial
-from Tkinter import *           # Tk, Frame, Button, Listbox, OptionMenu, Scrollbar, StringVar
+from Tkinter import *   # Tk, Frame, Button, Listbox, OptionMenu, Scrollbar, StringVar
 from Speak import *
 from Word import *
 
-    
-# Widget creation class
-
-
-################# MODIFICATION #######################
-# Made GUI a class
 
 class GUI:
 
