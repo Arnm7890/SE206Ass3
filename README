@@ -4,3 +4,15 @@ Assignment 3 - Teacher Interface
 Authors: Arunim Talwar and Andrew Luey
 Date: September 2011
 Description: Spelling list management
+
+
+To be fixed/added:
+- Fix faults which mean the about us and exit buttons don't show (stopped working)
+- Fix fault which means the add/remove list window doesn't show anything (stopped working)
+- Add/remove list
+- Add/remove word
+- Import/export list features
+- Fix link between option menu & listbox
+- Make the speak button work
+- Add merge lists functionality
+- Student management functionality

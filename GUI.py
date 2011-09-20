@@ -283,14 +283,6 @@ class GUI:
         createButton(manageListBtnFrame, 4, 0, "Back", newListWindow.destroy, "grey")
 
 
-    def speakSelected(self):
-
-    ######################### ADD FUNCTION ###################################
-    # This function must take the selected words from the listbox (variable name
-    # = wordList) and speak those words
-
-        pass
-
     # Import/Export as tldr file functions
 
     def importList(self):
