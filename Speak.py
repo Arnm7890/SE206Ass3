@@ -20,6 +20,7 @@ def restartFest():
     global proc
     killpg(getpgid(proc.pid), SIGKILL)
     proc = Popen(["festival", "--pipe"], stdin=PIPE, preexec_fn=setsid)
+    print "temporary test message: speaking stopped"
     
 # Start the speaking functionality
 proc = Popen(["festival", "--pipe"], stdin=PIPE, preexec_fn=setsid)
