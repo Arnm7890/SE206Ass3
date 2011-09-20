@@ -5,27 +5,10 @@
 # Date: September 2011
 
 
-from os import killpg, setsid, getpgid
-from subprocess import Popen, PIPE
-from signal import signal, SIGKILL
 from functools import partial
-from Tkinter import *
+from Tkinter import *           # Tk, Frame, Button, Listbox, OptionMenu, Scrollbar, StringVar
+from Speak import *
 
-# Tk, Frame, Button, Listbox, OptionMenu, Scrollbar, StringVar
-
-
-# Speech functions
-
-def speak(text):
-    """ Speaks the string input """
-    proc.stdin.write('(SayText "%s")\n' % text)
-
-def restartFest():
-    """ Stops the current speech """
-    global proc
-    killpg(getpgid(proc.pid), SIGKILL)
-    proc = Popen(["festival", "--pipe"], stdin=PIPE, preexec_fn=setsid)
-    
     
 # Widget creation functions
     
@@ -50,28 +33,8 @@ def createListBox(parent, x, y, val):
     lstbox['yscrollcommand'] = sbar.set
     return lstbox
 
-def changeWordList():
-    global wordList
-    wordList.set(childList)
 
-def SpeakSelected():
-    print "speak selected words"
-    
-def exit():
-
-    exitWindow = Toplevel(root)
-    
-    exitFrame = Frame(exitWindow)
-    exitFrame.grid(column=0, row=0, padx=10, pady=20)
-    
-    exitLabel = Label(exitFrame, text='Are you sure you wish to exit?')
-    exitLabel.grid(column=0, row=0, columnspan=2)
-    
-    exitBtnFrame = Frame(exitFrame)
-    exitBtnFrame.grid(column=0, row=1, pady=10)
-    
-    createButton(exitBtnFrame, 0, 0, "Yes", root.quit, "grey")
-    createButton(exitBtnFrame, 1, 0, "No", exitWindow.destroy, "grey")
+# About Us window
 
 def aboutUs():
 
@@ -87,6 +50,9 @@ def aboutUs():
     auBtnFrame.grid(column=0, row=1, pady=10)
     
     createButton(auBtnFrame, 0, 1, "Back", auWindow.destroy, "grey")
+    
+
+# New word window
 
 def newWord():
 
@@ -118,10 +84,45 @@ def newWord():
     
     createButton(newWordBtnFrame, 0, 0, "Add", newWordFn, "grey")
     createButton(newWordBtnFrame, 1, 0, "Back", newWordWindow.destroy, "grey")
-
+    
 def newWordFn():
-    print "New list made and option menu updated"
 
+    ######################### ADD FUNCTION ###################################
+    # Take the word in the newWordDefName variable (in the function above) and
+    # add it to the spelling list
+    
+    pass
+
+def removeWordFn():
+
+    ######################### ADD FUNCTION ###################################
+    # Take the selected words in the list and remove them from the spelling
+    # list
+    
+    pass
+    
+
+# Exit window
+
+def exit():
+
+    exitWindow = Toplevel(root)
+    
+    exitFrame = Frame(exitWindow)
+    exitFrame.grid(column=0, row=0, padx=10, pady=20)
+    
+    exitLabel = Label(exitFrame, text='Are you sure you wish to exit?')
+    exitLabel.grid(column=0, row=0, columnspan=2)
+    
+    exitBtnFrame = Frame(exitFrame)
+    exitBtnFrame.grid(column=0, row=1, pady=10)
+    
+    createButton(exitBtnFrame, 0, 0, "Yes", root.quit, "grey")
+    createButton(exitBtnFrame, 1, 0, "No", exitWindow.destroy, "grey")
+    
+
+# New list window    
+    
 def addListFn():
 
     addListWindow = Toplevel(root)
@@ -139,8 +140,7 @@ def addListFn():
     createButton(addListFrame, 3, 0, "Back", addListWindow.destroy, "grey")
 
 
-def removeWordFn():
-    print "word removed and list updated"
+# Add/remove list window
 
 def manageLists():
 
@@ -162,18 +162,25 @@ def manageLists():
     createButton(manageListBtnFrame, 4, 0, "Back", newListWindow.destroy, "grey")
 
 
+def SpeakSelected():
 
-# Start the speaking functionality
-proc = Popen(["festival", "--pipe"], stdin=PIPE, preexec_fn=setsid)
-proc.stdin.write("(audio_mode 'async)\n")
+    ######################### ADD FUNCTION ###################################
+    # This function must take the selected words from the listbox (variable name
+    # = wordList) and speak those words
+
+    pass
+    
 
 # Initialise GUI
 root = Tk()
 root.title("Teacher Interface")
 
-# Menu
+
+# Initialise Menu
+
 menubar = Menu(root)
 
+# Top Level 
 fileMenu = Menu(menubar, tearoff=0)
 editMenu = Menu(menubar, tearoff=0)
 helpMenu = Menu(menubar, tearoff=0)
@@ -182,15 +189,21 @@ menubar.add_cascade(label="File", menu=fileMenu)
 menubar.add_cascade(label="Edit", menu=editMenu)
 menubar.add_cascade(label="Help", menu=helpMenu)
 
+# File Menu
+
 fileMenu.add_command(label="Import list")
 fileMenu.add_command(label="Export list")
 fileMenu.add_separator()
 fileMenu.add_command(label="Exit", command=exit)
 
+# Edit Menu
+
 editMenu.add_command(label="Add/remove lists", command=manageLists)
 editMenu.add_command(label="Add word", command=newWord)
 editMenu.add_command(label="Remove selected word/s")
 editMenu.add_command(label="Merge lists")
+
+# Help Menu
 
 helpMenu.add_command(label="About us", command=aboutUs)
 
@@ -199,9 +212,9 @@ root.config(menu=menubar)
 
 # Word lists
 listNames = ["Child", "ESOL", "BEE"]
-childList = ("apple", "ball", "cat")
-esolList = ("digger", "emu", "fish")
-beeList = ("goat", "ho", "igloo")
+childList = ("child1", "child2", "child3")      # This will hold the child list
+esolList = ("esol1", "esol2", "esol3")          # This will hold the ESOL list
+beeList = ("bee1", "bee1", "bee1")              # This will hold the BEE list
 
 # Listbox Frame
 listFrame = Frame(root, width=120)
@@ -215,6 +228,9 @@ createListBox(listFrame, 0, 1, wordList)
 currentListName = StringVar(value="Please select a list")
 optMenu = createOptionMenu(listFrame, 0, 0, currentListName, listNames)
 
+############### ADD FUNCTIONALITY #############
+# Need to add event binding so that when the option menu is changed the listbox
+# is updated to show that list
 
 # Speech Frame
 speechFrame = Frame(listFrame, width=120)

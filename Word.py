@@ -1,5 +1,9 @@
 #!/usr/bin/python
 
+#SOFTENG 206 Assignment 3
+#Andrew Luey and Arunim Talwar
+#September 2011
+
 class Word(object):
 
 	def __init__(self, word, definition, example, level):
