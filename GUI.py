@@ -296,8 +296,21 @@ currentListName = StringVar(value="Please select a list")
 optMenu = createOptionMenu(listFrame, 0, 0, currentListName, listNames)
 
 ############### ADD FUNCTIONALITY #############
-# Need to add event binding so that when the option menu is changed the listbox
-# is updated to show that list
+# Need to be changed to handle when new lists are added / removed
+
+# lists = [childList, esolList, beeList]
+
+def updateList(*args):
+    if currentListName.get() == "Child":
+        wordList.set(childList)
+    elif currentListName.get() == "ESOL":
+        wordList.set(esolList)
+    elif currentListName.get() == "BEE":
+        wordList.set(beeList)
+
+currentListName.trace("w", updateList)
+
+############################################
 
 # Speech Frame
 speechFrame = Frame(listFrame, width=120)
