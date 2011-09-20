@@ -5,27 +5,9 @@
 # Date: September 2011
 
 
-from os import killpg, setsid, getpgid
-from subprocess import Popen, PIPE
-from signal import signal, SIGKILL
 from functools import partial
-from Tkinter import *
-
-# Tk, Frame, Button, Listbox, OptionMenu, Scrollbar, StringVar
-
-
-# Speech functions
-
-def speak(text):
-    """ Speaks the string input """
-    proc.stdin.write('(SayText "%s")\n' % text)
-
-def restartFest():
-    """ Stops the current speech """
-    global proc
-    killpg(getpgid(proc.pid), SIGKILL)
-    proc = Popen(["festival", "--pipe"], stdin=PIPE, preexec_fn=setsid)
-    
+from Tkinter import *       # Tk, Frame, Button, Listbox, OptionMenu, Scrollbar, StringVar
+from Speak import *
     
 # Widget creation functions
     
@@ -55,7 +37,7 @@ def changeWordList():
     wordList.set(childList)
 
 def SpeakSelected():
-    print "speak selected words"
+    speak("hello")
     
 def exit():
 
@@ -163,9 +145,7 @@ def manageLists():
 
 
 
-# Start the speaking functionality
-proc = Popen(["festival", "--pipe"], stdin=PIPE, preexec_fn=setsid)
-proc.stdin.write("(audio_mode 'async)\n")
+
 
 # Initialise GUI
 root = Tk()
@@ -199,9 +179,9 @@ root.config(menu=menubar)
 
 # Word lists
 listNames = ["Child", "ESOL", "BEE"]
-childList = ("apple", "ball", "cat")
-esolList = ("digger", "emu", "fish")
-beeList = ("goat", "ho", "igloo")
+childList = ("child1", "child2", "child3")
+esolList = ("esol1", "esol2", "esol3")
+beeList = ("bee1", "bee1", "bee1")
 
 # Listbox Frame
 listFrame = Frame(root, width=120)
