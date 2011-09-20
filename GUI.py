@@ -10,6 +10,7 @@ from functools import partial
 from Tkinter import *   # Tk, Frame, Button, Listbox, OptionMenu, Scrollbar, StringVar
 from Speak import *
 from Word import *
+from tkMessageBox import *
 
 
 class GUI:
@@ -123,22 +124,9 @@ class GUI:
         return self.lstbox
 
 
-    # About Us window
-
     def aboutUs(self):
-
-        auWindow = Toplevel(root)
-
-        auFrame = Frame(auWindow)
-        auFrame.grid(column=0, row=0, padx=10, pady=12)
-		
-        auLabel = Label(auFrame, text='Made by Arunim Talwar and Andrew Luey')
-        auLabel.grid(column=0, row=0)
-		
-        auBtnFrame = Frame(auFrame)
-        auBtnFrame.grid(column=0, row=1, pady=10)
-		
-        createButton(auBtnFrame, 0, 1, "Back", auWindow.destroy, "grey")
+        """ Displays About Us dialog box """
+        showinfo('About Us', 'Made by Arunim Talwar and Andrew Luey')
 		
 
     # New word window
@@ -203,20 +191,10 @@ class GUI:
     # Exit window
 
     def exit(self):
-
-        exitWindow = Toplevel(root)
-
-        exitFrame = Frame(exitWindow)
-        exitFrame.grid(column=0, row=0, padx=10, pady=20)
-
-        exitLabel = Label(exitFrame, text='Are you sure you wish to exit?')
-        exitLabel.grid(column=0, row=0, columnspan=2)
-
-        exitBtnFrame = Frame(exitFrame)
-        exitBtnFrame.grid(column=0, row=1, pady=10)
-
-        createButton(exitBtnFrame, 0, 0, "Yes", root.quit, "grey")
-        createButton(exitBtnFrame, 1, 0, "No", exitWindow.destroy, "grey")
+        """ Confirms program quit """
+        global root
+        if askyesno('Exit', 'Do you wish to exit the teacher interface?', icon="warning"):
+            root.destroy()
 
 
     # New list window    
