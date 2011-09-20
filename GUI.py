@@ -257,7 +257,6 @@ class GUI:
         # want this to work but the general idea is that.
 
         print "temporary test message: list imported"
-        pass
         
     def exportList(self):
 
@@ -265,8 +264,7 @@ class GUI:
         # This function takes a spelling list and exports it as a tldr file. It will
         # therefore have to let you browse to let you choose where to save the file.
         
-        print "temporary test message: list exported"
-        pass    
+        print "temporary test message: list exported"  
 
 
     # Functions to remove lists
@@ -278,7 +276,6 @@ class GUI:
         # you copy words from other lists.
 
         print "temporary test message: list merged"
-        pass
         
         
     # Speak button functions
@@ -290,7 +287,6 @@ class GUI:
         # = wordList) and speak those words
 
         print "temporary test message: selected words spoken"
-        pass
 		
 
 # Initialise GUI
