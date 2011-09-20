@@ -8,6 +8,10 @@
 from functools import partial
 from Tkinter import *           # Tk, Frame, Button, Listbox, OptionMenu, Scrollbar, StringVar
 from Speak import *
+<<<<<<< HEAD
+=======
+from Word import *
+>>>>>>> 7947a649b788aa3ea4be11deb0b032f4f9c523e5
 
     
 # Widget creation functions
@@ -78,9 +82,15 @@ def newWord():
     newWordDefName = StringVar()
     newWordDefEntry = Entry(newWordFrame, textvariable=newWordDefName)
     newWordDefEntry.grid(column=1, row=2)
+
+    newWordLevelLabel = Label(newWordFrame, text='Level:')
+    newWordLevelLabel.grid(column=0, row=3)
+    newWordLevelName = StringVar()
+    newWordLevelEntry = Entry(newWordFrame, textvariable=newWordLevelName)
+    newWordLevelEntry.grid(column=1, row=3)
     
     newWordBtnFrame = Frame(newWordFrame)
-    newWordBtnFrame.grid(column=0, row=3, columnspan=2, pady=10, sticky="e")
+    newWordBtnFrame.grid(column=0, row=4, columnspan=2, pady=10, sticky="e")
     
     createButton(newWordBtnFrame, 0, 0, "Add", newWordFn, "grey")
     createButton(newWordBtnFrame, 1, 0, "Back", newWordWindow.destroy, "grey")
@@ -91,7 +101,13 @@ def newWordFn():
     # Take the word in the newWordDefName variable (in the function above) and
     # add it to the spelling list
     
+<<<<<<< HEAD
     pass
+=======
+    new_word = Word(newWordName.get, newWordExampleName.get, newWordDefName.get, newWordLevelName.get)
+    lstbox.insert(END, new_word.word)
+	
+>>>>>>> 7947a649b788aa3ea4be11deb0b032f4f9c523e5
 
 def removeWordFn():
 
