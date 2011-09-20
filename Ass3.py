@@ -1,4 +1,4 @@
-import SE206Ass3.Word
+from Word import *
 
 def parseFile(tldrfile):
 	
