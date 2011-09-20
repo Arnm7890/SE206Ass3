@@ -21,7 +21,6 @@ def restartFest():
     killpg(getpgid(proc.pid), SIGKILL)
     proc = Popen(["festival", "--pipe"], stdin=PIPE, preexec_fn=setsid)
     
-    
 # Start the speaking functionality
 proc = Popen(["festival", "--pipe"], stdin=PIPE, preexec_fn=setsid)
 proc.stdin.write("(audio_mode 'async)\n")
