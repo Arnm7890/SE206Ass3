@@ -7,11 +7,9 @@ Description: Spelling list management
 
 
 To be fixed/added:
-- Fix faults which mean the about us and exit buttons don't show (stopped working)
-- Fix fault which means the add/remove list window doesn't show anything (stopped working)
-- Add/remove list
-- Add/remove word
-- Import/export list features
+- Add/remove list functionality
+- Add/remove word functionality
+- Import/export list functionality
 - Fix link between option menu & listbox
 - Make the speak button work
 - Add merge lists functionality

@@ -184,8 +184,8 @@ class GUI:
     # Take the selected words in the list and remove them from the spelling
     # list
 		
-        print "temporary test message: word removed"
-        pass
+        if askyesno('Warning!', 'Are you sure you wish to delete the selected words?', icon="warning"):
+            print "temporary test message: word removed"
 		
 
     # Exit window
@@ -212,8 +212,8 @@ class GUI:
         addListEntry = Entry(addListFrame, textvariable=addListName)
         addListEntry.grid(column=1, row=0)
 		
-        createButton(addListFrame, 2, 0, "Add", newListFn, "grey")
-        createButton(addListFrame, 3, 0, "Back", addListWindow.destroy, "grey")
+        self.createButton(addListFrame, 2, 0, "Add", self.newListFn, "grey")
+        self.createButton(addListFrame, 3, 0, "Back", addListWindow.destroy, "grey")
 
     def newListFn(self):
 
@@ -231,14 +231,15 @@ class GUI:
         ######################### ADD FUNCTION ###################################
         # Takes the list/s selected and deletes it
         
-        print "temporary test message: list removed"
-        pass
+        if askyesno('Warning!', 'Are you sure you wish to delete this spelling list?', icon="warning"):
+            print "temporary test message: list removed"
+            
 
     # Add/remove list window
 
     def manageLists(self):
 
-        newListWindow = Toplevel(root)
+        newListWindow = Toplevel(root) 
 
         # Listbox Frame
         manageListFrame = Frame(newListWindow)
@@ -246,14 +247,14 @@ class GUI:
 
         # Listbox
         listNamesVar = StringVar()
-        createListBox(manageListFrame, 0, 0, listNamesVar)
+        self.createListBox(manageListFrame, 0, 0, listNamesVar)
 		
         manageListBtnFrame = Frame(newListWindow)
         manageListBtnFrame.grid(column=0, row=1, columnspan=2, padx=10, pady=10)
 		
-        createButton(manageListBtnFrame, 2, 0, "Add", addListFn, "grey")
-        createButton(manageListBtnFrame, 3, 0, "Remove", removeListFn, "grey")
-        createButton(manageListBtnFrame, 4, 0, "Back", newListWindow.destroy, "grey")
+        self.createButton(manageListBtnFrame, 2, 0, "Add", self.addListFn, "grey")
+        self.createButton(manageListBtnFrame, 3, 0, "Remove", self.removeListFn, "grey")
+        self.createButton(manageListBtnFrame, 4, 0, "Back", newListWindow.destroy, "grey")
 
 
     # Import/Export as tldr file functions
