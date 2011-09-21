@@ -25,8 +25,10 @@ class GUI:
         self.newWordDefName = StringVar()
         self.newWordLevelName = StringVar()
 
+        self.addListName = StringVar()
+
         self.data = []
-        self.filename = StringVar()
+        self.fileName = StringVar()
 
         self.menubar = Menu(root)
 
@@ -58,9 +60,12 @@ class GUI:
 
         # Word lists
         self.listNames = ["Child", "ESOL", "BEE"]
-        self.childList = ("child1", "child2", "child3")      # This will hold the child list
-        self.esolList = ("esol1", "esol2", "esol3")          # This will hold the ESOL list
-        self.beeList = ("bee1", "bee1", "bee1")              # This will hold the BEE list
+        self.childWords = ("word[0]", "word[1]", "word[2]", "word[3]", "word[4]", "word[5]", "word[6]", "word[7]", "word[8]", "word[9]", "word[10]", "word[11]", "word[12]", "word[13]", "word[14]", "word[15]", "word[16]", "word[17]", "word[18]", "word[19]", "word[20]", "word[21]", "word[22]", "word[23]", "word[24]", "word[25]", "word[26]", "word[27]", "word[28]", "word[29]")
+        self.childDif = ("dif[0]", "dif[1]", "dif[2]", "dif[3]", "dif[4]", "dif[5]", "dif[6]", "dif[7]", "dif[8]", "dif[9]", "dif[10]", "dif[11]", "dif[12]", "dif[13]", "dif[14]", "dif[15]", "dif[16]", "dif[17]", "dif[18]", "dif[19]", "dif[20]", "dif[21]", "dif[22]", "dif[23]", "dif[24]", "dif[25]", "dif[26]", "dif[27]", "dif[28]", "dif[29]")
+        self.childDef = ("def[0]", "def[1]", "def[2]", "def[3]", "def[4]", "def[5]", "def[6]", "def[7]", "def[8]", "def[9]", "def[10]", "def[11]", "def[12]", "def[13]", "def[14]", "def[15]", "def[16]", "def[17]", "def[18]", "def[19]", "def[20]", "def[21]", "def[22]", "def[23]", "def[24]", "def[25]", "def[26]", "def[27]", "def[28]", "def[29]")
+        self.childExp = ("exp[0]", "exp[1]", "exp[2]", "exp[3]", "exp[4]", "exp[5]", "exp[6]", "exp[7]", "exp[8]", "exp[9]", "exp[10]", "exp[11]", "exp[12]", "exp[13]", "exp[14]", "exp[15]", "exp[16]", "exp[17]", "exp[18]", "exp[19]", "exp[20]", "exp[21]", "exp[22]", "exp[23]", "exp[24]", "exp[25]", "exp[26]", "exp[27]", "exp[28]", "exp[29]")
+        self.esolWords = ("esol1", "esol2", "esol3")          # This will hold the ESOL list
+        self.beeWords = ("bee1", "bee1", "bee1")              # This will hold the BEE list
 
         # Listbox Frame
         self.listFrame = Frame(root)
@@ -68,8 +73,9 @@ class GUI:
 
         # Listbox
         columnNames = (('Word', 10), ('Difficulty', 8), ('Definition', 60), ('Example', 60))
-        self.wordList = StringVar()
-        self.createMultiListBox(self.listFrame, columnNames, 0, 1, self.wordList)
+#        self.wordList = StringVar()
+        self.createMultiListBox(self.listFrame, columnNames, 0, 1, self.childWords, self.childDif, self.childDef, self.childExp)
+
 
         # Listbox Frame
         self.optFrame = Frame(self.listFrame)
@@ -127,32 +133,95 @@ class GUI:
         self.lstbox['yscrollcommand'] = sbar.set
         return self.lstbox
         	
-    def createMultiListBox(self, parent, columnNames, x, y, val):
-        """ Listbox to show the spelling list """
+        	
+        	
+        	
+    def createMultiListBox(self, parent, columnNames, x, y, *sList):
 
-        self.columns = []
+        listOfLists = []
+        
+        for sl in sList:
+            listOfLists.append(sl)
+
+        if len(columnNames) == len(listOfLists):
+            pass
+        else:
+            print "help!"
+            return
+        
+        Label(parent, borderwidth=1, relief=RAISED).grid(column=len(columnNames)+1, row=y, sticky="ew")
+        sbar = Scrollbar(parent, orient="vertical", command=self.onVsb)
+        sbar.grid(column=len(columnNames)+1, row=y+1, sticky="ns")
+
+        self.listOfColumns = []
+
+        self.selectedItems = []
 
         for l,w in columnNames:
         
 	        # Column headings
-	        Label(parent, text=l, borderwidth=1, relief=RAISED).grid(column=x+columnNames.index((l,w)), row=y, sticky="ew")
+	        Label(parent, text=l, borderwidth=1, relief=RAISED)\
+	            .grid(column=x+columnNames.index((l,w)), row=y, sticky="ew")
 	        
 	        # Column listboxes
-	        lstbox = Listbox(parent, width=w, listvariable=val,
+	        lstbox = Listbox(parent, width=w,
 	                         selectmode="extended", height=20, borderwidth=0,
-	                         selectborderwidth=0, relief=FLAT, exportselection=FALSE)
+	                         selectborderwidth=0, relief=FLAT, exportselection=FALSE,
+	                         yscrollcommand=sbar.set)
 	        lstbox.grid(column=x+columnNames.index((l,w)), row=y+1)
-	        self.columns.append(lstbox)
+	        lstbox.bind("<MouseWheel>", self.onScroll)
+	        lstbox.bind("<Button-4>", self.onScroll)
+	        lstbox.bind("<Button-5>", self.onScroll)
+	        lstbox.bind("<Button-1>", lambda e, s=self: s._select(e.y))
+	        for element in listOfLists[columnNames.index((l,w))]:
+	            s = str(element)
+	            lstbox.insert("end", s)
+	        self.listOfColumns.append(lstbox)
 
-        Label(parent, borderwidth=1, relief=RAISED).grid(column=0, row=0)
-        sbar = Scrollbar(parent, orient="vertical", command=self.scroll)
-        sbar.grid(column=len(columnNames)+1, row=y+1, sticky="ns")
-        self.columns[0]['yscrollcommand'] = sbar.set
-            
 
-#        sbar = Scrollbar(parent, orient="vertical", command=self.lstbox.yview)
-#        sbar.grid(column=x+1, row=y, sticky="ns")
-#        self.columns['yscrollcommand'] = sbar.set
+
+    def _select(self, y):
+	    row = self.listOfColumns[0].nearest(y)
+	    self.selection_clear(0, END)
+	    self.selection_set(row)
+	    return 'break'
+	        
+    def selection_set(self, first, last=None):
+	    for l in self.listOfColumns:
+	        l.selection_set(first, last)
+	        self.selectedItems.append(l)
+	        
+    def selection_clear(self, first, last=None):
+	    for l in self.selectedItems:
+	        l.selection_clear(first, last)
+
+    def onScroll(self, event):
+        """
+        Convert mousewheel motion to scrollbar motion.
+        """
+        if (event.num == 4):    # Linux encodes wheel as 'buttons' 4 and 5
+            delta = -1
+        elif (event.num == 5):
+            delta = 1
+        else:                   # Windows & OSX
+            delta = event.delta
+        for lb in self.listOfColumns:
+            lb.yview("scroll", delta, "units")
+        # Return 'break' to prevent the default bindings from
+        # firing, which would end up scrolling the widget twice.
+        return "break"
+
+    def onVsb(self, *args):
+        """ scroll bar moves all listboxes """
+        for lb in self.listOfColumns:
+            lb.yview(*args)
+
+
+
+
+
+
+
 
 
     def scroll(self, *args):
@@ -236,14 +305,16 @@ class GUI:
 		
         addListLabel = Label(addListFrame, text='New list name:')
         addListLabel.grid(column=0, row=0)
-        addListName = StringVar()
-        addListEntry = Entry(addListFrame, textvariable=addListName)
+
+        addListEntry = Entry(addListFrame, textvariable=self.addListName)
         addListEntry.grid(column=1, row=0)
 		
         self.createButton(addListFrame, 2, 0, "Add", addListWindow.destroy, "grey")
         self.createButton(addListFrame, 3, 0, "Back", addListWindow.destroy, "grey")
 
     def newListFn(self):
+
+        
 
         ######################### ADD FUNCTION ###################################
         # Takes the value of the addListName variable and makes a list of that name
@@ -311,16 +382,21 @@ class GUI:
 
 	    tldr_files = askopenfilenames(filetypes = [("Word List", ".tldr")])
 	    for tldr_file in tldr_files:
-            #self.addToOptMenu(tldr_file)
 	        try:
 	            with open(tldr_file, "r") as c:
-	                data = list(parseFile(c))
+	                self.data = list(parseFile(c))
+                    self.fileName.set(tldr_file)
 	        except IOError as e:
 	            tkMessageBox.showwarning("Import Error", "Could not import file!")
 	        except Exception as e:
 	            tkMessageBox.showwarning("Parse error", "Could not parse file!")
 
-        
+
+    def addImportedFile(self, importedFileName, importedFile):
+
+        self.listNames.append(importedFileName)
+
+
     def exportList(self):
 
         ######################### ADD FUNCTION ###################################
