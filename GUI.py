@@ -60,23 +60,31 @@ class GUI:
 
         # Word lists
         self.listNames = ["Child", "ESOL", "BEE"]
+        
         self.childWords = ["word[0]", "word[1]", "word[2]", "word[3]", "word[4]", "word[5]", "word[6]", "word[7]", "word[8]", "word[9]", "word[10]", "word[11]", "word[12]", "word[13]", "word[14]", "word[15]", "word[16]", "word[17]", "word[18]", "word[19]", "word[20]", "word[21]", "word[22]", "word[23]", "word[24]", "word[25]", "word[26]", "word[27]", "word[28]", "word[29]"]
         self.childDif = ["dif[0]", "dif[1]", "dif[2]", "dif[3]", "dif[4]", "dif[5]", "dif[6]", "dif[7]", "dif[8]", "dif[9]", "dif[10]", "dif[11]", "dif[12]", "dif[13]", "dif[14]", "dif[15]", "dif[16]", "dif[17]", "dif[18]", "dif[19]", "dif[20]", "dif[21]", "dif[22]", "dif[23]", "dif[24]", "dif[25]", "dif[26]", "dif[27]", "dif[28]", "dif[29]"]
         self.childDef = ["def[0]", "def[1]", "def[2]", "def[3]", "def[4]", "def[5]", "def[6]", "def[7]", "def[8]", "def[9]", "def[10]", "def[11]", "def[12]", "def[13]", "def[14]", "def[15]", "def[16]", "def[17]", "def[18]", "def[19]", "def[20]", "def[21]", "def[22]", "def[23]", "def[24]", "def[25]", "def[26]", "def[27]", "def[28]", "def[29]"]
         self.childExp = ["exp[0]", "exp[1]", "exp[2]", "exp[3]", "exp[4]", "exp[5]", "exp[6]", "exp[7]", "exp[8]", "exp[9]", "exp[10]", "exp[11]", "exp[12]", "exp[13]", "exp[14]", "exp[15]", "exp[16]", "exp[17]", "exp[18]", "exp[19]", "exp[20]", "exp[21]", "exp[22]", "exp[23]", "exp[24]", "exp[25]", "exp[26]", "exp[27]", "exp[28]", "exp[29]"]
-        self.esolWords = ("esol1", "esol2", "esol3")          # This will hold the ESOL list
-        self.beeWords = ("bee1", "bee1", "bee1")              # This will hold the BEE list
+        
+        
+        self.esolWords = ["esol word"]
+        self.esolDif = ["esol dif"]
+        self.esolDef = ["esol def"]
+        self.esolExp = ["esol exp"]
+        
+        self.beeWords = ["bee word"]
+        self.beeDif = ["bee dif"]
+        self.beeDef = ["bee def"]
+        self.beeExp = ["bee exp"]
 
         self.words = []
         self.dif = []
         self.defn = []
         self.exp = []
         
-        ######### TEMPORARY HARD CODING #############
-        self.words = self.childWords
-        self.dif = self.childDif
-        self.defn = self.childDef
-        self.exp = self.childExp
+        self.setup()
+        
+    def setup(self):
 
         # Listbox Frame
         self.listFrame = Frame(root)
@@ -93,20 +101,10 @@ class GUI:
         self.optFrame.grid(column=0, row=0, columnspan=len(columnNames), sticky="ew")
 
         # Option menu
-        self.currentListName = StringVar(master)
+        self.currentListName = StringVar()
         self.currentListName.set("Please select a list")
         self.optMenu = self.createOptionMenu(self.optFrame, 0, 0, self.currentListName, self.listNames)
         self.createButton(self.optFrame, 1, 0, "Manage lists", self.manageLists, colour="light grey")
-
-        def updateList(*args):
-            if self.currentListName.get() == "Child":
-                self.wordList.set(self.childList)
-            elif self.currentListName.get() == "ESOL":
-                self.wordList.set(self.esolList)
-            elif self.currentListName.get() == "BEE":
-                self.wordList.set(self.beeList)
-
-        self.currentListName.trace("w", updateList)
 
         # Speech Frame
         self.speechFrame = Frame(self.listFrame, width=120)
@@ -117,8 +115,26 @@ class GUI:
                                                                                                     ### it requires one argument, none given, even when item is selected. Have to
                                                                                                     ### have some way to actually use whats selected in the list box
         self.createButton(self.speechFrame, 1, 0, "Stop", restartFest, colour="red")
-    
 
+    def updateList(self, *args):
+        if self.currentListName.get() == "Child":
+            self.words = self.childWords
+            self.dif = self.childDif
+            self.defn = self.childDef
+            self.exp = self.childExp
+        elif self.currentListName.get() == "BEE":
+            self.words = self.beeWords
+            self.dif = self.beeDif
+            self.defn = self.beeDef
+            self.exp = self.beeExp
+        elif self.currentListName.get() == "ESOL":
+            self.words = self.esolWords
+            self.dif = self.esolDif
+            self.defn = self.esolDef
+            self.exp = self.esolExp
+        self.listFrame.destroy()
+        self.setup()
+           
     def createButton(self, parent, x, y, txt, fn, colour):
 		
         """ Button which runs the function fn when pressed """
@@ -132,7 +148,7 @@ class GUI:
         """ Option menu to show the spelling list """
         optMenu = OptionMenu(parent, val, *var)
         optMenu.grid(column=x, row=y, sticky="ew")
-        optMenu.bind("<Button-5>", self.onScroll)
+        val.trace("w", self.updateList)
         return optMenu
 
     def createListBox(self, parent, x, y, val):
@@ -149,7 +165,6 @@ class GUI:
         	
         	
     def createMultiListBox(self, parent, columnNames, x, y, *sList):
-
         listOfLists = []
         
         for sl in sList:
