@@ -63,7 +63,7 @@ class GUI:
         self.beeList = ("bee1", "bee1", "bee1")              # This will hold the BEE list
 
         # Listbox Frame
-        self.listFrame = Frame(root, width=120)
+        self.listFrame = Frame(root)
         self.listFrame.grid(column=0, row=0, padx=10, pady=10)
 
         # Listbox
@@ -71,10 +71,15 @@ class GUI:
         self.wordList = StringVar()
         self.createMultiListBox(self.listFrame, columnNames, 0, 1, self.wordList)
 
+        # Listbox Frame
+        self.optFrame = Frame(self.listFrame)
+        self.optFrame.grid(column=0, row=0, columnspan=len(columnNames), sticky="ew")
+
         # Option menu
         self.currentListName = StringVar(master)
         self.currentListName.set("Please select a list")
-        self.optMenu = self.createOptionMenu(self.listFrame, 0, 0, len(columnNames), self.currentListName, self.listNames)
+        self.optMenu = self.createOptionMenu(self.optFrame, 0, 0, self.currentListName, self.listNames)
+        self.createButton(self.optFrame, 1, 0, "Manage lists", self.manageLists, colour="light grey")
 
         def updateList(*args):
             if self.currentListName.get() == "Child":
@@ -105,11 +110,11 @@ class GUI:
         return btn
 
 
-    def createOptionMenu(self, parent, x, y, cSpan, val, var):
+    def createOptionMenu(self, parent, x, y, val, var):
 
         """ Option menu to show the spelling list """
         optMenu = OptionMenu(parent, val, *var)
-        optMenu.grid(column=x, row=y, columnspan=cSpan, sticky="ew")
+        optMenu.grid(column=x, row=y, sticky="ew")
         return optMenu
 
     def createListBox(self, parent, x, y, val):
@@ -284,14 +289,13 @@ class GUI:
         self.listEditMenu = Menu(self.menubar, tearoff=0)
         self.manageListMenubar.add_cascade(label="Edit", menu=self.listEditMenu)
 
+        self.listFileMenu.add_command(label="Import", command=self.importList)
+        self.listFileMenu.add_command(label="Export", command=self.exportList)
+        self.listFileMenu.add_separator()
         self.listFileMenu.add_command(label="Close", command=newListWindow.destroy)
 
         self.listEditMenu.add_command(label="Add", command=self.addListFn)
         self.listEditMenu.add_command(label="Remove", command=self.removeListFn)
-        self.listEditMenu.add_separator()
-        self.listEditMenu.add_command(label="Import", command=self.exportList)
-        self.listEditMenu.add_command(label="Export", command=self.importList)
-        self.listEditMenu.add_separator()
         self.listEditMenu.add_command(label="Merge", command=self.mergeLists)
 
         newListWindow.config(menu=self.manageListMenubar)
@@ -300,7 +304,7 @@ class GUI:
 
     def importList(self):
 
-	    tldr_files = tkFileDialog.askopenfilenames(filetypes = [("Word List", ".tldr")])
+	    tldr_files = askopenfilenames(filetypes = [("Word List", ".tldr")])
 	    for tldr_file in tldr_files:
             #self.addToOptMenu(tldr_file)
 	        try:
