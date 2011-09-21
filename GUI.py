@@ -60,12 +60,23 @@ class GUI:
 
         # Word lists
         self.listNames = ["Child", "ESOL", "BEE"]
-        self.childWords = ("word[0]", "word[1]", "word[2]", "word[3]", "word[4]", "word[5]", "word[6]", "word[7]", "word[8]", "word[9]", "word[10]", "word[11]", "word[12]", "word[13]", "word[14]", "word[15]", "word[16]", "word[17]", "word[18]", "word[19]", "word[20]", "word[21]", "word[22]", "word[23]", "word[24]", "word[25]", "word[26]", "word[27]", "word[28]", "word[29]")
-        self.childDif = ("dif[0]", "dif[1]", "dif[2]", "dif[3]", "dif[4]", "dif[5]", "dif[6]", "dif[7]", "dif[8]", "dif[9]", "dif[10]", "dif[11]", "dif[12]", "dif[13]", "dif[14]", "dif[15]", "dif[16]", "dif[17]", "dif[18]", "dif[19]", "dif[20]", "dif[21]", "dif[22]", "dif[23]", "dif[24]", "dif[25]", "dif[26]", "dif[27]", "dif[28]", "dif[29]")
-        self.childDef = ("def[0]", "def[1]", "def[2]", "def[3]", "def[4]", "def[5]", "def[6]", "def[7]", "def[8]", "def[9]", "def[10]", "def[11]", "def[12]", "def[13]", "def[14]", "def[15]", "def[16]", "def[17]", "def[18]", "def[19]", "def[20]", "def[21]", "def[22]", "def[23]", "def[24]", "def[25]", "def[26]", "def[27]", "def[28]", "def[29]")
-        self.childExp = ("exp[0]", "exp[1]", "exp[2]", "exp[3]", "exp[4]", "exp[5]", "exp[6]", "exp[7]", "exp[8]", "exp[9]", "exp[10]", "exp[11]", "exp[12]", "exp[13]", "exp[14]", "exp[15]", "exp[16]", "exp[17]", "exp[18]", "exp[19]", "exp[20]", "exp[21]", "exp[22]", "exp[23]", "exp[24]", "exp[25]", "exp[26]", "exp[27]", "exp[28]", "exp[29]")
+        self.childWords = ["word[0]", "word[1]", "word[2]", "word[3]", "word[4]", "word[5]", "word[6]", "word[7]", "word[8]", "word[9]", "word[10]", "word[11]", "word[12]", "word[13]", "word[14]", "word[15]", "word[16]", "word[17]", "word[18]", "word[19]", "word[20]", "word[21]", "word[22]", "word[23]", "word[24]", "word[25]", "word[26]", "word[27]", "word[28]", "word[29]"]
+        self.childDif = ["dif[0]", "dif[1]", "dif[2]", "dif[3]", "dif[4]", "dif[5]", "dif[6]", "dif[7]", "dif[8]", "dif[9]", "dif[10]", "dif[11]", "dif[12]", "dif[13]", "dif[14]", "dif[15]", "dif[16]", "dif[17]", "dif[18]", "dif[19]", "dif[20]", "dif[21]", "dif[22]", "dif[23]", "dif[24]", "dif[25]", "dif[26]", "dif[27]", "dif[28]", "dif[29]"]
+        self.childDef = ["def[0]", "def[1]", "def[2]", "def[3]", "def[4]", "def[5]", "def[6]", "def[7]", "def[8]", "def[9]", "def[10]", "def[11]", "def[12]", "def[13]", "def[14]", "def[15]", "def[16]", "def[17]", "def[18]", "def[19]", "def[20]", "def[21]", "def[22]", "def[23]", "def[24]", "def[25]", "def[26]", "def[27]", "def[28]", "def[29]"]
+        self.childExp = ["exp[0]", "exp[1]", "exp[2]", "exp[3]", "exp[4]", "exp[5]", "exp[6]", "exp[7]", "exp[8]", "exp[9]", "exp[10]", "exp[11]", "exp[12]", "exp[13]", "exp[14]", "exp[15]", "exp[16]", "exp[17]", "exp[18]", "exp[19]", "exp[20]", "exp[21]", "exp[22]", "exp[23]", "exp[24]", "exp[25]", "exp[26]", "exp[27]", "exp[28]", "exp[29]"]
         self.esolWords = ("esol1", "esol2", "esol3")          # This will hold the ESOL list
         self.beeWords = ("bee1", "bee1", "bee1")              # This will hold the BEE list
+
+        self.words = []
+        self.dif = []
+        self.defn = []
+        self.exp = []
+        
+        ######### TEMPORARY HARD CODING #############
+        self.words = self.childWords
+        self.dif = self.childDif
+        self.defn = self.childDef
+        self.exp = self.childExp
 
         # Listbox Frame
         self.listFrame = Frame(root)
@@ -74,7 +85,7 @@ class GUI:
         # Listbox
         columnNames = (('Word', 10), ('Difficulty', 8), ('Definition', 60), ('Example', 60))
 #        self.wordList = StringVar()
-        self.createMultiListBox(self.listFrame, columnNames, 0, 1, self.childWords, self.childDif, self.childDef, self.childExp)
+        self.createMultiListBox(self.listFrame, columnNames, 0, 1, self.words, self.dif, self.defn, self.exp)
 
 
         # Listbox Frame
@@ -121,6 +132,7 @@ class GUI:
         """ Option menu to show the spelling list """
         optMenu = OptionMenu(parent, val, *var)
         optMenu.grid(column=x, row=y, sticky="ew")
+        optMenu.bind("<Button-5>", self.onScroll)
         return optMenu
 
     def createListBox(self, parent, x, y, val):
