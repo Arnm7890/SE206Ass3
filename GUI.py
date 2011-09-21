@@ -10,7 +10,9 @@ from functools import partial
 from Tkinter import *   # Tk, Frame, Button, Listbox, OptionMenu, Scrollbar, StringVar
 from Speak import *
 from Word import *
-from tkMessageBox import *
+from Ass3 import *
+import tkMessageBox
+import tkFileDialog
 
 
 class GUI:
@@ -21,6 +23,9 @@ class GUI:
         self.newWordExampleName = StringVar()
         self.newWordDefName = StringVar()
         self.newWordLevelName = StringVar()
+
+        self.data = []
+        self.filename = StringVar()
 
         self.menubar = Menu(root)
 
@@ -123,7 +128,7 @@ class GUI:
 
     def aboutUs(self):
         """ Displays About Us dialog box """
-        showinfo('About Us', 'Made by Arunim Talwar and Andrew Luey')
+        tkMessageBox.showinfo('About Us', 'Made by Arunim Talwar and Andrew Luey')
 		
 
     # New word window
@@ -172,7 +177,7 @@ class GUI:
 	
 
     def removeWordFn(self):
-        if askyesno('Warning!', 'Are you sure you wish to delete the selected words?', icon="warning"):
+        if tkMessageBox.askyesno('Warning!', 'Are you sure you wish to delete the selected words?', icon="warning"):
             while True:
                 selection = self.lstbox.curselection()
                 if not selection: break
@@ -183,7 +188,7 @@ class GUI:
     def exit(self):
         """ Confirms program quit """
         global root
-        if askyesno('Exit', 'Do you wish to exit the teacher interface?', icon="warning"):
+        if tkMessageBox.askyesno('Exit', 'Do you wish to exit the teacher interface?', icon="warning"):
             root.destroy()
 
 
@@ -202,7 +207,7 @@ class GUI:
         addListEntry = Entry(addListFrame, textvariable=addListName)
         addListEntry.grid(column=1, row=0)
 		
-        self.createButton(addListFrame, 2, 0, "Add", self.newListFn, "grey")
+        self.createButton(addListFrame, 2, 0, "Add", addListWindow.destroy, "grey")
         self.createButton(addListFrame, 3, 0, "Back", addListWindow.destroy, "grey")
 
     def newListFn(self):
@@ -251,12 +256,17 @@ class GUI:
 
     def importList(self):
 
-        ######################### ADD FUNCTION ###################################
-        # This function let you browse to find a file then it will take the values
-        # in this file and have it as a spelling list in the program. IDK how we
-        # want this to work but the general idea is that.
+	    tldr_files = tkFileDialog.askopenfilenames(filetypes = [("Word List", ".tldr")])
+	    for tldr_file in tldr_files:
+            #self.addToOptMenu(tldr_file)
+	        try:
+	            with open(tldr_file, "r") as c:
+	                data = list(parseFile(c))
+	        except IOError as e:
+	            tkMessageBox.showwarning("Import Error", "Could not import file!")
+	        except Exception as e:
+	            tkMessageBox.showwarning("Parse error", "Could not parse file!")
 
-        print "temporary test message: list imported"
         
     def exportList(self):
 
