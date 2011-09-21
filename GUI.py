@@ -67,7 +67,7 @@ class GUI:
         self.listFrame.grid(column=0, row=0, padx=10, pady=10)
 
         # Listbox
-        columnNames = (('Word', 10), ('Definition', 60), ('Example', 60))
+        columnNames = (('Word', 10), ('Difficulty', 8), ('Definition', 60), ('Example', 60))
         self.wordList = StringVar()
         self.createMultiListBox(self.listFrame, columnNames, 0, 1, self.wordList)
 
@@ -133,26 +133,31 @@ class GUI:
         self.columns = []
 
         for l,w in columnNames:
-                 
+        
 	        # Column headings
 	        Label(parent, text=l, borderwidth=1, relief=RAISED).grid(column=x+columnNames.index((l,w)), row=y, sticky="ew")
 	        
 	        # Column listboxes
-	        self.lstbox = Listbox(parent, width=w, listvariable=val,
+	        lstbox = Listbox(parent, width=w, listvariable=val,
 	                         selectmode="extended", height=20, borderwidth=0,
 	                         selectborderwidth=0, relief=FLAT, exportselection=FALSE)
-	        self.lstbox.grid(column=x+columnNames.index((l,w)), row=y+1)
-	        self.columns.append(self.lstbox)
-	        
-	        print 
-    
+	        lstbox.grid(column=x+columnNames.index((l,w)), row=y+1)
+	        self.columns.append(lstbox)
+
+        Label(parent, borderwidth=1, relief=RAISED).grid(column=0, row=0)
+        sbar = Scrollbar(parent, orient="vertical", command=self.scroll)
+        sbar.grid(column=len(columnNames)+1, row=y+1, sticky="ns")
+        self.columns[0]['yscrollcommand'] = sbar.set
             
 
-        #sbar = Scrollbar(parent, orient="vertical", command=self.lstbox.yview)
-        #sbar.grid(column=x+1, row=y, sticky="ns")
-        #self.lstbox['yscrollcommand'] = sbar.set
-        #return self.lstbox
+#        sbar = Scrollbar(parent, orient="vertical", command=self.lstbox.yview)
+#        sbar.grid(column=x+1, row=y, sticky="ns")
+#        self.columns['yscrollcommand'] = sbar.set
 
+
+    def scroll(self, *args):
+	    for l in self.columns:
+	        apply(l.yview, args)
 
     def aboutUs(self):
         """ Displays About Us dialog box """
