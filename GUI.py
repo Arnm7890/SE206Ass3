@@ -12,21 +12,24 @@ from tkMessageBox import *
 from tkFileDialog import *
 import Speak
 from Word import *
-from Ass3 import *
+
 
 
 
 class GUI:
 
     def __init__(self, master):
-        
-        self.root = master
+    
+        self.root = master    
         
         self.speakObj = Speak.Festival()     # Festival functionality
         self.CreateBaseMenus()          # Create menus
         
-        
+        self.newListBool = False
+        self.newFileBool = False
+
         self.addListName = StringVar()
+        self.entryListName = StringVar()
 
         self.data = []
         self.fileName = StringVar()
@@ -61,7 +64,11 @@ class GUI:
         self.fileDif = []
         self.fileDef = []
         self.fileExp = []
-        
+
+        self.addWords = []
+        self.addDif = []
+        self.addDef = []
+        self.addExp = []
 
         self.words = []
         self.dif = []
@@ -127,12 +134,14 @@ class GUI:
         self.createButton(self.speechFrame, 0, 0, "Play", self.ss, colour="green")            ### This method (speakSelected) shows an error when clicked, saying that
                                                                                                     ### it requires one argument, none given, even when item is selected. Have to
                                                                                                     ### have some way to actually use whats selected in the list box
-        self.createButton(self.speechFrame, 1, 0, "Stop", self.speakObj.restartFest, colour="red")
+        self.createButton(self.speechFrame, 1, 0, "Stop", self.speakObj.restartFest, colour="pink")
+
 
     def ss(self):
 #        partial(, self.listOfColumns[0].curselection())
         for index in self.listOfColumns[0].curselection():
             self.speakObj.speakSelected(self.listOfColumns[0].get(index))
+
 
     def updateList(self, *args):
         if self.currentListName.get() == "Child":
@@ -151,11 +160,18 @@ class GUI:
             self.dif = self.esolDif
             self.defn = self.esolDef
             self.exp = self.esolExp
-        elif self.currentListName.get() == self.fucking_file_name:
-            self.words = self.fileWords
-            self.dif = self.fileDif
-            self.defn = self.fileDef
-            self.exp = self.fileExp
+        elif self.newListBool:
+            if self.currentListName.get() == self.addListName.get():
+                self.words = self.addWords
+                self.dif = self.addDif
+                self.defn = self.addDef
+                self.exp = self.addExp
+        elif self.newFileBool:
+            if self.currentListName.get() == self.fucking_file_name[self.fucking_index]:
+                self.words = self.fileWords
+                self.dif = self.fileDif
+                self.defn = self.fileDef
+                self.exp = self.fileExp
         self.listFrame.destroy()
         self.setup()
            
@@ -290,12 +306,6 @@ class GUI:
 
 
 
-
-
-
-
-
-
     def scroll(self, *args):
         for l in self.columns:
             apply(l.yview, args)
@@ -303,7 +313,6 @@ class GUI:
     def aboutUs(self):
         """ Displays About Us dialog box """
         showinfo('About Us', 'Made by Arunim Talwar and Andrew Luey')
-        
 
     # New word window
 
@@ -361,7 +370,7 @@ class GUI:
     # Exit window    
     def exit(self):
         """ Confirms program quit """
-        if askyesno('Exit', 'Do you wish to close the teacher interface?', icon="warning"):
+        if askyesno('Exit', 'Do you wish to exit the teacher interface?', icon="warning"):
             self.root.destroy()
 
 
@@ -369,43 +378,39 @@ class GUI:
         
     def addListFn(self):
 
-        addListWindow = Toplevel(self.root)
+        self.addListWindow = Toplevel(self.root)
         
-        addListFrame = Frame(addListWindow)
+        addListFrame = Frame(self.addListWindow)
         addListFrame.grid(column=0, row=0, padx=10, pady=20)
         
         addListLabel = Label(addListFrame, text='New list name:')
         addListLabel.grid(column=0, row=0)
 
+        self.addListName = StringVar()
         addListEntry = Entry(addListFrame, textvariable=self.addListName)
         addListEntry.grid(column=1, row=0)
         
-        self.createButton(addListFrame, 2, 0, "Add", addListWindow.destroy, "grey")
-        self.createButton(addListFrame, 3, 0, "Back", addListWindow.destroy, "grey")
+        self.createButton(addListFrame, 2, 0, "Add", self.newListFn, "grey")
+        self.createButton(addListFrame, 3, 0, "Back", self.addListWindow.destroy, "grey")
 
     def newListFn(self):
+        self.listNames.append(self.addListName.get())
+        self.w.insert(END, self.addListName.get())
+        self.addListWindow.destroy()
+        self.optMenu.destroy()
+        self.optMenu = self.createOptionMenu(self.optFrame, 0, 0, self.currentListName, self.listNames)
+        self.newListBool = True      
 
-        
-
-        ######################### ADD FUNCTION ###################################
-        # Takes the value of the addListName variable and makes a list of that name
-        # updating the listbox of names and the option menu from which you can
-        # select lists. Also at the end of this it should close the window.
-        
-        print "temporary test message: list created"
-        pass
-
-
-    def removeListFn(self):
-
-        ######################### ADD FUNCTION ###################################
-        # Takes the list/s selected and deletes it
-        
+    def removeListFn(self):        
         if askyesno('Warning!', 'Are you sure you wish to delete this spelling list?', icon="warning"):
             while True:
                 selection = self.w.curselection()
                 if not selection: break
-                self.w.delete(selection[0])
+                x = int(selection[0])
+                self.w.delete(x)
+                del self.listNames[x]
+                self.optMenu.destroy()
+                self.optMenu = self.createOptionMenu(self.optFrame, 0, 0, self.currentListName, self.listNames)
             
 
     # Add/remove list window
@@ -460,15 +465,20 @@ class GUI:
                 with open(tldr_file, "r") as c:
                     self.data = list(parseFile(c))
                     self.fucking_file_name = tldr_file.split("/")
-                    fucking_index = len(self.fucking_file_name) - 1
-                    self.w.insert(END, self.fucking_file_name[fucking_index])
+                    self.fucking_index = len(self.fucking_file_name) - 1
+                    self.listNames.append(self.fucking_file_name[self.fucking_index])
+                    self.optMenu.destroy()
+                    self.optMenu = self.createOptionMenu(self.optFrame, 0, 0, self.currentListName, self.listNames)
+                    self.w.insert(END, self.fucking_file_name[self.fucking_index])
                     for i in range(len(self.data)):
                         self.addImportedFile(self.data[i])
+                    self.updateList()
+                    self.newFileBool = True
 
             except IOError as e:
                 showwarning("Import Error", "Could not import file!")
-            except Exception as e:
-                showwarning("Parse error", "Could not parse file!")
+           # except Exception as e:
+            #    showwarning("Parse error", "Could not parse file!")
 
 
     def addImportedFile(self, importedFile):
@@ -497,4 +507,3 @@ class GUI:
         # you copy words from other lists.
 
         print "temporary test message: list merged"
-

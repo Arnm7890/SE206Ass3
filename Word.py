@@ -26,33 +26,15 @@ class Word(object):
         return self.level
 
     def serialize(self):
-		
-        """		
-        >>> Word("dog", "a member of the genus Canis", "the dog ate the bone", "easy").serialize()
-        'dog|a member of the genus Canis|the dog ate the bone|easy'
-        """
-
         return "{word}|{definition}|{example}|{level}".format(**self.__dict__)
 
     @classmethod
     def unserialize(cls, entry):
-
-        """
-        >>> w = Word.unserialize("dog|a member of the genus Canis|the dog ate the bone|easy")
-        >>> w.word
-        'dog'
-        >>> w.definition
-        'a member of the genus Canis'
-        >>> w.example
-        'the dog ate the bone'
-        >>> w.level
-        'easy'
-        """
-
         return cls(*entry.split("|"))
 
 
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
-
+def parseFile(tldrfile):	
+    for line in tldrfile:
+        if line[0] == "#":
+            continue
+        yield Word.unserialize(line)   # The use of the 'yield' keyword, to return an interable, was advised by Tony Young.
