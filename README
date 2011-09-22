@@ -8,6 +8,5 @@ Description: Spelling list management
 
 To be fixed/added:
 - export tldr files [Arunim]
-- update the option menu of spelling lists when you remove a list
-- remove list functionality
+- add/remove words
 - Add merge lists functionality
