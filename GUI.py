@@ -20,7 +20,9 @@ class GUI:
 
     def __init__(self, master):
         
-        self.speakObj = Speak.GUI()     # Festival functionality
+        self.root = master
+        
+        self.speakObj = Speak.Festival()     # Festival functionality
         self.CreateBaseMenus()          # Create menus
         
         
@@ -70,15 +72,15 @@ class GUI:
         
     def CreateBaseMenus(self):
 
-        menubar = Menu(root)
+        self.menubar = Menu(self.root)
 
         # Top Level 
-        fileMenu = Menu(menubar, tearoff=0)
-        menubar.add_cascade(label="File", menu=fileMenu)
-        editMenu = Menu(menubar, tearoff=0)
-        menubar.add_cascade(label="Edit", menu=editMenu)
-        helpMenu = Menu(menubar, tearoff=0)
-        menubar.add_cascade(label="Help", menu=helpMenu)
+        fileMenu = Menu(self.menubar, tearoff=0)
+        self.menubar.add_cascade(label="File", menu=fileMenu)
+        editMenu = Menu(self.menubar, tearoff=0)
+        self.menubar.add_cascade(label="Edit", menu=editMenu)
+        helpMenu = Menu(self.menubar, tearoff=0)
+        self.menubar.add_cascade(label="Help", menu=helpMenu)
 
         # File Menu
         fileMenu.add_command(label="Manage lists", command=self.manageLists)
@@ -92,13 +94,13 @@ class GUI:
         # Help Menu
         helpMenu.add_command(label="About us", command=self.aboutUs)
 
-        root.config(menu=menubar)
+        self.root.config(menu=self.menubar)
         
 
     def setup(self):
 
         # Listbox Frame
-        self.listFrame = Frame(root)
+        self.listFrame = Frame(self.root)
         self.listFrame.grid(column=0, row=0, padx=10, pady=10)
 
         # Listbox
@@ -122,10 +124,15 @@ class GUI:
         self.speechFrame.grid(column=0, row=3, columnspan=len(columnNames), padx=10, pady=10)
 
         # Speech buttons
-        self.createButton(self.speechFrame, 0, 0, "Play", partial(self.speakObj.speakSelected,self.columnsSelected[0].get()), colour="green")            ### This method (speakSelected) shows an error when clicked, saying that
+        self.createButton(self.speechFrame, 0, 0, "Play", self.ss, colour="green")            ### This method (speakSelected) shows an error when clicked, saying that
                                                                                                     ### it requires one argument, none given, even when item is selected. Have to
                                                                                                     ### have some way to actually use whats selected in the list box
         self.createButton(self.speechFrame, 1, 0, "Stop", self.speakObj.restartFest, colour="red")
+
+    def ss(self):
+#        partial(, self.listOfColumns[0].curselection())
+        for index in self.listOfColumns[0].curselection():
+            self.speakObj.speakSelected(self.listOfColumns[0].get(index))
 
     def updateList(self, *args):
         if self.currentListName.get() == "Child":
@@ -144,7 +151,7 @@ class GUI:
             self.dif = self.esolDif
             self.defn = self.esolDef
             self.exp = self.esolExp
-        elif self.currentListName.get() == self.fileName.get():
+        elif self.currentListName.get() == self.fucking_file_name:
             self.words = self.fileWords
             self.dif = self.fileDif
             self.defn = self.fileDef
@@ -167,6 +174,16 @@ class GUI:
         optMenu.grid(column=x, row=y, sticky="ew")
         val.trace("w", self.updateList)
         return optMenu
+
+    def addMenuOptions():
+        """ Add Menu options dynamically """
+
+        global optionMenuWidget
+
+        optionMenuWidget["menu"].delete(0, END)
+        # Add options from 1 to 5
+        for i in range(1, 6):
+            optionMenuWidget["menu"].add_command(label=i, command=lambda temp = i: optionMenuWidget.setvar(optionMenuWidget.cget("textvariable"), value = temp))
 
     def createListBox(self, parent, x, y, val):
 
@@ -200,6 +217,8 @@ class GUI:
         self.listOfColumns = []
         self.columnsSelected = []
         self.selectedItems = []
+        
+        self.listSelected = []
 
         for l,w in columnNames:
         
@@ -211,7 +230,7 @@ class GUI:
             
             # Column listboxes
             lstbox = Listbox(parent, width=w,
-                             selectmode="extended", height=20, borderwidth=0,
+                             selectmode=EXTENDED, height=20, borderwidth=0,
                              selectborderwidth=0, relief=FLAT, exportselection=FALSE,
                              yscrollcommand=sbar.set, listvariable=self.var)
             lstbox.grid(column=x+columnNames.index((l,w)), row=y+1)
@@ -219,7 +238,8 @@ class GUI:
             lstbox.bind("<MouseWheel>", self.onScroll)
             lstbox.bind("<Button-4>", self.onScroll)
             lstbox.bind("<Button-5>", self.onScroll)
-            lstbox.bind("<Button-1>", lambda e, s=self: s._select(e.y))
+            lstbox.bind("<Button-1>", lambda e, s=self: s._select1(e.y))
+            lstbox.bind("<Control-Button-1>", lambda e, s=self: s._select2(e.y))            
             for element in listOfLists[columnNames.index((l,w))]:
                 s = str(element)
                 lstbox.insert("end", s)
@@ -227,19 +247,24 @@ class GUI:
 
 
 
-    def _select(self, y):
+    def _select1(self, y):
         row = self.listOfColumns[0].nearest(y)
         self.selection_clear(0, END)
         self.selection_set(row)
         return 'break'
-            
+
+    def _select2(self, y):
+        row = self.listOfColumns[0].nearest(y)
+        self.selection_set(row)
+        return 'break'
+                    
     def selection_set(self, first, last=None):
         for l in self.listOfColumns:
             l.selection_set(first, last)
             self.selectedItems.append(l)
             
     def selection_clear(self, first, last=None):
-        for l in self.selectedItems:
+        for l in self.listOfColumns:
             l.selection_clear(first, last)
 
     def onScroll(self, event):
@@ -284,7 +309,7 @@ class GUI:
 
     def newWord(self):
 
-        newWordWindow = Toplevel(root)
+        newWordWindow = Toplevel(self.root)
         
         newWordFrame = Frame(newWordWindow)
         newWordFrame.grid(column=0, row=0, padx=10, pady=20)
@@ -336,16 +361,15 @@ class GUI:
     # Exit window    
     def exit(self):
         """ Confirms program quit """
-        global root
-        if askyesno('Exit', 'Do you wish to exit the teacher interface?', icon="warning"):
-            root.destroy()
+        if askyesno('Exit', 'Do you wish to close the teacher interface?', icon="warning"):
+            self.root.destroy()
 
 
     # New list window    
         
     def addListFn(self):
 
-        addListWindow = Toplevel(root)
+        addListWindow = Toplevel(self.root)
         
         addListFrame = Frame(addListWindow)
         addListFrame.grid(column=0, row=0, padx=10, pady=20)
@@ -378,14 +402,17 @@ class GUI:
         # Takes the list/s selected and deletes it
         
         if askyesno('Warning!', 'Are you sure you wish to delete this spelling list?', icon="warning"):
-            print "temporary test message: list removed"
+            while True:
+                selection = self.w.curselection()
+                if not selection: break
+                self.w.delete(selection[0])
             
 
     # Add/remove list window
 
     def manageLists(self):
 
-        self.newListWindow = Toplevel(root) 
+        self.newListWindow = Toplevel(self.root) 
 
         # Listbox Frame
         manageListFrame = Frame(self.newListWindow)
@@ -432,19 +459,16 @@ class GUI:
             try:
                 with open(tldr_file, "r") as c:
                     self.data = list(parseFile(c))
-                    file_fucking_name = tldr_file.split("/")
-                    fucking_index = len(file_fucking_name) - 1
-                    self.listNames.append(file_fucking_name[fucking_index])
+                    self.fucking_file_name = tldr_file.split("/")
+                    fucking_index = len(self.fucking_file_name) - 1
+                    self.w.insert(END, self.fucking_file_name[fucking_index])
                     for i in range(len(self.data)):
                         self.addImportedFile(self.data[i])
 
-                    self.newListWindow.destroy
-                    self.manageLists()
-
             except IOError as e:
-                tkMessageBox.showwarning("Import Error", "Could not import file!")
+                showwarning("Import Error", "Could not import file!")
             except Exception as e:
-                tkMessageBox.showwarning("Parse error", "Could not parse file!")
+                showwarning("Parse error", "Could not parse file!")
 
 
     def addImportedFile(self, importedFile):
@@ -473,10 +497,4 @@ class GUI:
         # you copy words from other lists.
 
         print "temporary test message: list merged"
-        
 
-# Initialise GUI
-root = Tk()
-root.title("Teacher Interface")
-gui = GUI(root)
-root.mainloop()

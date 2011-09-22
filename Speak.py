@@ -11,7 +11,7 @@ from subprocess import Popen, PIPE
 from signal import signal, SIGKILL
 
 
-class GUI:
+class Festival:
 
     def __init__(self):
         """ Start the speaking functionality """
