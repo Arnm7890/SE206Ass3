@@ -11,17 +11,19 @@ from subprocess import Popen, PIPE
 from signal import signal, SIGKILL
 
 
-def speakSelected(text):
-    """ Speaks the string input """
-    proc.stdin.write('(SayText "%s")\n' % text)
+class GUI:
 
-def restartFest():
-    """ Stops the current speech """
-    global proc
-    killpg(getpgid(proc.pid), SIGKILL)
-    proc = Popen(["festival", "--pipe"], stdin=PIPE, preexec_fn=setsid)
-    print "temporary test message: speaking stopped"
-    
-# Start the speaking functionality
-proc = Popen(["festival", "--pipe"], stdin=PIPE, preexec_fn=setsid)
-proc.stdin.write("(audio_mode 'async)\n")
+    def __init__(self):
+        """ Start the speaking functionality """
+        self.proc = Popen(["festival", "--pipe"], stdin=PIPE, preexec_fn=setsid)
+        self.proc.stdin.write("(audio_mode 'async)\n")
+
+    def speakSelected(self, text):
+        """ Speaks the string input """
+        self.proc.stdin.write('(SayText "%s")\n' % text)
+
+    def restartFest(self):
+        """ Stops the current speech """
+        killpg(getpgid(self.proc.pid), SIGKILL)
+        self.proc = Popen(["festival", "--pipe"], stdin=PIPE, preexec_fn=setsid)
+        print "temporary test message: speaking stopped"

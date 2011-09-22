@@ -10,7 +10,7 @@ from functools import partial
 from Tkinter import *   # Tk, Frame, Button, Listbox, OptionMenu, Scrollbar, StringVar
 from tkMessageBox import *
 from tkFileDialog import *
-from Speak import *
+import Speak
 from Word import *
 from Ass3 import *
 
@@ -19,43 +19,21 @@ from Ass3 import *
 class GUI:
 
     def __init__(self, master):
-		
-        self.newWordName = StringVar()
-        self.newWordExampleName = StringVar()
-        self.newWordDefName = StringVar()
-        self.newWordLevelName = StringVar()
-
+        
+        self.speakObj = Speak.GUI()     # Festival functionality
+        self.CreateBaseMenus()          # Create menus
+        
+        
         self.addListName = StringVar()
 
         self.data = []
         self.fileName = StringVar()
-
-        self.menubar = Menu(root)
-
-        # Top Level 
-        self.fileMenu = Menu(self.menubar, tearoff=0)
-        self.menubar.add_cascade(label="File", menu=self.fileMenu)
-        self.editMenu = Menu(self.menubar, tearoff=0)
-        self.menubar.add_cascade(label="Edit", menu=self.editMenu)
-        self.helpMenu = Menu(self.menubar, tearoff=0)
-        self.menubar.add_cascade(label="Help", menu=self.helpMenu)
-
-
-        # File Menu
-        self.fileMenu.add_command(label="Manage lists", command=self.manageLists)
-        self.fileMenu.add_separator()
-        self.fileMenu.add_command(label="Exit", command=self.exit)
-
-        # Edit Menu
-        self.editMenu.add_command(label="Add", command=self.newWord)
-        self.editMenu.add_command(label="Remove", command=self.removeWordFn)
-
-
-        # Help Menu
-
-        self.helpMenu.add_command(label="About us", command=self.aboutUs)
-
-        root.config(menu=self.menubar)
+                
+        self.newWordName = StringVar()
+        self.newWordExampleName = StringVar()
+        self.newWordDefName = StringVar()
+        self.newWordLevelName = StringVar()
+        
 
 
         # Word lists
@@ -77,6 +55,12 @@ class GUI:
         self.beeDef = ["bee def"]
         self.beeExp = ["bee exp"]
 
+        self.fileWords = []
+        self.fileDif = []
+        self.fileDef = []
+        self.fileExp = []
+        
+
         self.words = []
         self.dif = []
         self.defn = []
@@ -84,6 +68,33 @@ class GUI:
         
         self.setup()
         
+    def CreateBaseMenus(self):
+
+        menubar = Menu(root)
+
+        # Top Level 
+        fileMenu = Menu(menubar, tearoff=0)
+        menubar.add_cascade(label="File", menu=fileMenu)
+        editMenu = Menu(menubar, tearoff=0)
+        menubar.add_cascade(label="Edit", menu=editMenu)
+        helpMenu = Menu(menubar, tearoff=0)
+        menubar.add_cascade(label="Help", menu=helpMenu)
+
+        # File Menu
+        fileMenu.add_command(label="Manage lists", command=self.manageLists)
+        fileMenu.add_separator()
+        fileMenu.add_command(label="Exit", command=self.exit)
+
+        # Edit Menu
+        editMenu.add_command(label="Add", command=self.newWord)
+        editMenu.add_command(label="Remove", command=self.removeWordFn)
+
+        # Help Menu
+        helpMenu.add_command(label="About us", command=self.aboutUs)
+
+        root.config(menu=menubar)
+        
+
     def setup(self):
 
         # Listbox Frame
@@ -111,10 +122,10 @@ class GUI:
         self.speechFrame.grid(column=0, row=3, columnspan=len(columnNames), padx=10, pady=10)
 
         # Speech buttons
-        self.createButton(self.speechFrame, 0, 0, "Play", self.speakSelected, colour="green")            ### This method (speakSelected) shows an error when clicked, saying that
+        self.createButton(self.speechFrame, 0, 0, "Play", partial(self.speakObj.speakSelected,self.columnsSelected[0].get()), colour="green")            ### This method (speakSelected) shows an error when clicked, saying that
                                                                                                     ### it requires one argument, none given, even when item is selected. Have to
                                                                                                     ### have some way to actually use whats selected in the list box
-        self.createButton(self.speechFrame, 1, 0, "Stop", restartFest, colour="red")
+        self.createButton(self.speechFrame, 1, 0, "Stop", self.speakObj.restartFest, colour="red")
 
     def updateList(self, *args):
         if self.currentListName.get() == "Child":
@@ -122,6 +133,7 @@ class GUI:
             self.dif = self.childDif
             self.defn = self.childDef
             self.exp = self.childExp
+
         elif self.currentListName.get() == "BEE":
             self.words = self.beeWords
             self.dif = self.beeDif
@@ -132,11 +144,16 @@ class GUI:
             self.dif = self.esolDif
             self.defn = self.esolDef
             self.exp = self.esolExp
+        elif self.currentListName.get() == self.fileName.get():
+            self.words = self.fileWords
+            self.dif = self.fileDif
+            self.defn = self.fileDef
+            self.exp = self.fileExp
         self.listFrame.destroy()
         self.setup()
            
     def createButton(self, parent, x, y, txt, fn, colour):
-		
+        
         """ Button which runs the function fn when pressed """
         btn = Button(parent, text=txt, command=fn, bg=colour, width=6)
         btn.grid(column=x, row=y)
@@ -160,10 +177,10 @@ class GUI:
         sbar.grid(column=x+1, row=y, sticky="ns")
         self.lstbox['yscrollcommand'] = sbar.set
         return self.lstbox
-        	
-        	
-        	
-        	
+            
+            
+            
+            
     def createMultiListBox(self, parent, columnNames, x, y, *sList):
         listOfLists = []
         
@@ -181,46 +198,49 @@ class GUI:
         sbar.grid(column=len(columnNames)+1, row=y+1, sticky="ns")
 
         self.listOfColumns = []
-
+        self.columnsSelected = []
         self.selectedItems = []
 
         for l,w in columnNames:
         
-	        # Column headings
-	        Label(parent, text=l, borderwidth=1, relief=RAISED)\
-	            .grid(column=x+columnNames.index((l,w)), row=y, sticky="ew")
-	        
-	        # Column listboxes
-	        lstbox = Listbox(parent, width=w,
-	                         selectmode="extended", height=20, borderwidth=0,
-	                         selectborderwidth=0, relief=FLAT, exportselection=FALSE,
-	                         yscrollcommand=sbar.set)
-	        lstbox.grid(column=x+columnNames.index((l,w)), row=y+1)
-	        lstbox.bind("<MouseWheel>", self.onScroll)
-	        lstbox.bind("<Button-4>", self.onScroll)
-	        lstbox.bind("<Button-5>", self.onScroll)
-	        lstbox.bind("<Button-1>", lambda e, s=self: s._select(e.y))
-	        for element in listOfLists[columnNames.index((l,w))]:
-	            s = str(element)
-	            lstbox.insert("end", s)
-	        self.listOfColumns.append(lstbox)
+            # Column headings
+            Label(parent, text=l, borderwidth=1, relief=RAISED)\
+                .grid(column=x+columnNames.index((l,w)), row=y, sticky="ew")
+            
+            self.var=StringVar()
+            
+            # Column listboxes
+            lstbox = Listbox(parent, width=w,
+                             selectmode="extended", height=20, borderwidth=0,
+                             selectborderwidth=0, relief=FLAT, exportselection=FALSE,
+                             yscrollcommand=sbar.set, listvariable=self.var)
+            lstbox.grid(column=x+columnNames.index((l,w)), row=y+1)
+            self.columnsSelected.append(self.var)
+            lstbox.bind("<MouseWheel>", self.onScroll)
+            lstbox.bind("<Button-4>", self.onScroll)
+            lstbox.bind("<Button-5>", self.onScroll)
+            lstbox.bind("<Button-1>", lambda e, s=self: s._select(e.y))
+            for element in listOfLists[columnNames.index((l,w))]:
+                s = str(element)
+                lstbox.insert("end", s)
+            self.listOfColumns.append(lstbox)
 
 
 
     def _select(self, y):
-	    row = self.listOfColumns[0].nearest(y)
-	    self.selection_clear(0, END)
-	    self.selection_set(row)
-	    return 'break'
-	        
+        row = self.listOfColumns[0].nearest(y)
+        self.selection_clear(0, END)
+        self.selection_set(row)
+        return 'break'
+            
     def selection_set(self, first, last=None):
-	    for l in self.listOfColumns:
-	        l.selection_set(first, last)
-	        self.selectedItems.append(l)
-	        
+        for l in self.listOfColumns:
+            l.selection_set(first, last)
+            self.selectedItems.append(l)
+            
     def selection_clear(self, first, last=None):
-	    for l in self.selectedItems:
-	        l.selection_clear(first, last)
+        for l in self.selectedItems:
+            l.selection_clear(first, last)
 
     def onScroll(self, event):
         """
@@ -252,33 +272,33 @@ class GUI:
 
 
     def scroll(self, *args):
-	    for l in self.columns:
-	        apply(l.yview, args)
+        for l in self.columns:
+            apply(l.yview, args)
 
     def aboutUs(self):
         """ Displays About Us dialog box """
         showinfo('About Us', 'Made by Arunim Talwar and Andrew Luey')
-		
+        
 
     # New word window
 
     def newWord(self):
 
         newWordWindow = Toplevel(root)
-		
+        
         newWordFrame = Frame(newWordWindow)
         newWordFrame.grid(column=0, row=0, padx=10, pady=20)
-		
+        
         newWordLabel = Label(newWordFrame, text='Word:')
         newWordLabel.grid(column=0, row=0)
         newWordEntry = Entry(newWordFrame, textvariable=self.newWordName)
         newWordEntry.grid(column=1, row=0)
-		
+        
         newWordExampleLabel = Label(newWordFrame, text='Example:')
         newWordExampleLabel.grid(column=0, row=1)
         newWordExampleEntry = Entry(newWordFrame, textvariable=self.newWordExampleName)
         newWordExampleEntry.grid(column=1, row=1)
-		
+        
         newWordDefLabel = Label(newWordFrame, text='Definition:')
         newWordDefLabel.grid(column=0, row=2)
         newWordDefEntry = Entry(newWordFrame, textvariable=self.newWordDefName)
@@ -288,13 +308,13 @@ class GUI:
         newWordLevelLabel.grid(column=0, row=3)
         newWordLevelEntry = Entry(newWordFrame, textvariable=self.newWordLevelName)
         newWordLevelEntry.grid(column=1, row=3)
-		
+        
         newWordBtnFrame = Frame(newWordFrame)
         newWordBtnFrame.grid(column=0, row=4, columnspan=2, pady=10, sticky="e")
-		
+        
         self.createButton(newWordBtnFrame, 0, 0, "Add", self.newWordFn, "grey")
         self.createButton(newWordBtnFrame, 1, 0, "Back", newWordWindow.destroy, "grey")
-		
+        
     def newWordFn(self):
         word_name = self.newWordName.get()
         word_example = self.newWordExampleName.get()
@@ -303,7 +323,7 @@ class GUI:
 
         new_word = Word(word_name, word_example, word_def, word_level)
         self.lstbox.insert(END, word_name)
-	
+    
 
     def removeWordFn(self):
         if askyesno('Warning!', 'Are you sure you wish to delete the selected words?', icon="warning"):
@@ -322,20 +342,20 @@ class GUI:
 
 
     # New list window    
-		
+        
     def addListFn(self):
 
         addListWindow = Toplevel(root)
-		
+        
         addListFrame = Frame(addListWindow)
         addListFrame.grid(column=0, row=0, padx=10, pady=20)
-		
+        
         addListLabel = Label(addListFrame, text='New list name:')
         addListLabel.grid(column=0, row=0)
 
         addListEntry = Entry(addListFrame, textvariable=self.addListName)
         addListEntry.grid(column=1, row=0)
-		
+        
         self.createButton(addListFrame, 2, 0, "Add", addListWindow.destroy, "grey")
         self.createButton(addListFrame, 3, 0, "Back", addListWindow.destroy, "grey")
 
@@ -365,24 +385,24 @@ class GUI:
 
     def manageLists(self):
 
-        newListWindow = Toplevel(root) 
+        self.newListWindow = Toplevel(root) 
 
         # Listbox Frame
-        manageListFrame = Frame(newListWindow)
+        manageListFrame = Frame(self.newListWindow)
         manageListFrame.grid(column=0, row=0, padx=10, pady=20)
 
         # Listbox
-        listNamesVar = StringVar(value=tuple(self.listNames))
-        self.createListBox(manageListFrame, 0, 0, listNamesVar)
-		
-        manageListBtnFrame = Frame(newListWindow)
+        self.listNamesVar = StringVar(value=tuple(self.listNames))
+        self.w = self.createListBox(manageListFrame, 0, 0, self.listNamesVar)
+        
+        manageListBtnFrame = Frame(self.newListWindow)
         manageListBtnFrame.grid(column=0, row=1, columnspan=2, padx=10, pady=10)
-		
+        
         self.createButton(manageListBtnFrame, 2, 0, "Add", self.addListFn, "grey")
         self.createButton(manageListBtnFrame, 3, 0, "Remove", self.removeListFn, "grey")
-        self.createButton(manageListBtnFrame, 4, 0, "Back", newListWindow.destroy, "grey")
+        self.createButton(manageListBtnFrame, 4, 0, "Back", self.newListWindow.destroy, "grey")
         
-        self.manageListMenubar = Menu(newListWindow)
+        self.manageListMenubar = Menu(self.newListWindow)
 
         # Top Level 
         
@@ -395,33 +415,44 @@ class GUI:
         self.listFileMenu.add_command(label="Import", command=self.importList)
         self.listFileMenu.add_command(label="Export", command=self.exportList)
         self.listFileMenu.add_separator()
-        self.listFileMenu.add_command(label="Close", command=newListWindow.destroy)
+        self.listFileMenu.add_command(label="Close", command=self.newListWindow.destroy)
 
         self.listEditMenu.add_command(label="Add", command=self.addListFn)
         self.listEditMenu.add_command(label="Remove", command=self.removeListFn)
         self.listEditMenu.add_command(label="Merge", command=self.mergeLists)
 
-        newListWindow.config(menu=self.manageListMenubar)
+        self.newListWindow.config(menu=self.manageListMenubar)
 
     # Import/Export as tldr file functions
 
     def importList(self):
 
-	    tldr_files = askopenfilenames(filetypes = [("Word List", ".tldr")])
-	    for tldr_file in tldr_files:
-	        try:
-	            with open(tldr_file, "r") as c:
-	                self.data = list(parseFile(c))
-                    self.fileName.set(tldr_file)
-	        except IOError as e:
-	            tkMessageBox.showwarning("Import Error", "Could not import file!")
-	        except Exception as e:
-	            tkMessageBox.showwarning("Parse error", "Could not parse file!")
+        tldr_files = askopenfilenames(filetypes = [("Word List", ".tldr")])
+        for tldr_file in tldr_files:
+            try:
+                with open(tldr_file, "r") as c:
+                    self.data = list(parseFile(c))
+                    file_fucking_name = tldr_file.split("/")
+                    fucking_index = len(file_fucking_name) - 1
+                    self.listNames.append(file_fucking_name[fucking_index])
+                    for i in range(len(self.data)):
+                        self.addImportedFile(self.data[i])
+
+                    self.newListWindow.destroy
+                    self.manageLists()
+
+            except IOError as e:
+                tkMessageBox.showwarning("Import Error", "Could not import file!")
+            except Exception as e:
+                tkMessageBox.showwarning("Parse error", "Could not parse file!")
 
 
-    def addImportedFile(self, importedFileName, importedFile):
+    def addImportedFile(self, importedFile):
 
-        self.listNames.append(importedFileName)
+        self.fileWords.append(importedFile.getWord())
+        self.fileDif.append(importedFile.getLevel())
+        self.fileDef.append(importedFile.getDef())
+        self.fileExp.append(importedFile.getExample())
 
 
     def exportList(self):
@@ -443,17 +474,6 @@ class GUI:
 
         print "temporary test message: list merged"
         
-        
-    # Speak button functions
-
-    def speakSelected(self):
-
-        ######################### ADD FUNCTION ###################################
-        # This function must take the selected words from the listbox (variable name
-        # = wordList) and speak those words
-
-        print "temporary test message: selected words spoken"
-		
 
 # Initialise GUI
 root = Tk()
