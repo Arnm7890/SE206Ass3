@@ -8,11 +8,6 @@ Description: Spelling list management
 
 To be fixed/added:
 - export tldr files [Arunim]
-- update the list of spelling lists when you add/import/remove a list
-- update the option menu of spelling lists when you add/import/remove a list
-- play button
-- multiListBox functionaility (multiple selection, Fix link between option menu & multilistbox) [Lulu]
-- add/remove word functionality
-- add/remove list functionality
+- update the option menu of spelling lists when you remove a list
+- remove list functionality
 - Add merge lists functionality
-- Student management functionality [Lulu]
